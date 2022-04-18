@@ -1,0 +1,10 @@
+{
+    "Name": "Shipping Logger",
+    "Author": "Failsplat",
+    "Version": "0.1.0",
+    "MinimumApiVersion": "3.13.0",
+    "Description": "Daily records of shipping bin contents, as JSON",
+    "UniqueID": "Failsplat.ShippingLogger",
+    "EntryDll": "ShippingLogger.dll",
+    "UpdateKeys": []
+}
