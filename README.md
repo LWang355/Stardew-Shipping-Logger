@@ -10,6 +10,7 @@ A header (at beginning of log file) contains:
 - Player Name
 - Farm Name
 - Unique IDs
+
 Daily entries contain:
 - Game Day (starting at Day 1 = Spr 1 of Yr 1)
 - Season, SeasonDay, Year, Weekday (for convenience)
@@ -17,6 +18,7 @@ Daily entries contain:
 - Money at end of day
 - Shipping bin revenue
 - Overall daily profit
+
 Then, for each item in the shipping bin:
 - Item Name - localized name of item
 - Category - according to this: https://stardewvalleywiki.com/Modding:Items#Categories
