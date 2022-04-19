@@ -18,42 +18,56 @@ namespace StardewShippingLogger
             helper.Events.GameLoop.DayStarted += this.OnDayStart;
         }
 
-        private ShippingLog shippingLog;
+        private ShippingLog ShippingLog = new();
 
         private void OnLoad(object sender, EventArgs e)
         {
-            shippingLog.extractPlayerInfo(Game1.player);
+            ShippingLog.PlayerInfo = new PlayerInfo(Game1.player, Game1.getFarm().Name);
         }
 
         private void OnDayStart(object sender, EventArgs e)
         {
             SDate date = SDate.Now();
-            shippingLog.dayInfo.moneyAtStart = Game1.player.Money;
+            ShippingLog.DayInfo = new DayInfo(date)
+            {
+                MoneyAtStart = Game1.player.Money
+            };
+            ShippingLog.ClearBoxContents();
 
         }
 
         private void OnDayEnd(object sender, EventArgs e)
         {
-            // TODO:
-            // The part that actually records the contents of the bin
-            shippingLog.dayInfo.moneyAtEnd = Game1.player.Money;
-            shippingLog.calculateProfits();
+
+            foreach (Item item in Game1.getFarm().getShippingBin(Game1.player))
+            {
+                ShippingLog.AddItemStack(item);
+            }
+
+            ShippingLog.DayInfo.MoneyAtEnd = Game1.player.Money;
+            ShippingLog.calculateProfits();
 
             // TODO:
             // The part that writes out to a file
+            string fileName = $"data/{Constants.SaveFolderName}";
+            fileName += "-"+ShippingLog.PlayerInfo.PlayerName;
+            fileName += "-" + ShippingLog.DayInfo.GetDateAsString();
+            fileName += "-" + DateTime.Now.ToString("yyyyMMdd-HHmm");
+
+            this.Helper.Data.WriteJsonFile(fileName, ShippingLog);
         }
 
     }
     class ShippingLog
     {
-        public PlayerInfo playerInfo;
-        public DayInfo dayInfo;
+        public PlayerInfo PlayerInfo;
+        public DayInfo DayInfo;
         public IList<StackInBox> boxContents = new List<StackInBox>();
 
         public void calculateProfits()
         {
-            this.dayInfo.dayProfit = this.dayInfo.moneyAtStart - this.dayInfo.moneyAtEnd;
-            this.dayInfo.binRevenue = this.CalculateBinRevenue();
+            this.DayInfo.DayProfit = this.DayInfo.MoneyAtStart - this.DayInfo.MoneyAtEnd;
+            this.DayInfo.BinRevenue = this.CalculateBinRevenue();
         }
 
         public int CalculateBinRevenue()
@@ -61,58 +75,95 @@ namespace StardewShippingLogger
             int total = 0;
             foreach (StackInBox binItem in this.boxContents)
             {
-                total += binItem.quantity * binItem.unitPrice;
+                total += binItem.ItemQuantity * binItem.ItemUnitPrice;
             }
             return total;
         }
 
-        public void extractPlayerInfo(Farmer farmer)
+        public void AddItemStack(Item item)
         {
+            StackInBox newStack = new StackInBox(item);
+            this.boxContents.Add(newStack);
+        }
 
+        public void ClearBoxContents()
+        {
+            this.boxContents.Clear();
         }
     }
 
     class DayInfo 
     {
-        public int runDay { get; set; }
-        public string season { get; set; }
-        public int dayOfSeason { get; set; }
-        public int year { get; set; }
-        public int moneyAtStart { get; set; }
-        public int moneyAtEnd { get; set; }
-        public int binRevenue { get; set; }
-        public int dayProfit { get; set; }
+        public int RunDay { get; set; }
+        public int SeasonIndex { get; set; }
+        public int DayOfSeason { get; set; }
+        public int Year { get; set; }
+        public int MoneyAtStart { get; set; }
+        public int MoneyAtEnd { get; set; }
+        public int BinRevenue { get; set; }
+        public int DayProfit { get; set; }
 
         public DayInfo(SDate sDate)
         {
-            runDay = sDate.DaysSinceStart;
-            season = sDate.Season;
-            dayOfSeason = sDate.Day;
-            year = sDate.Year;
+            RunDay = sDate.DaysSinceStart;
+            SeasonIndex = sDate.SeasonIndex;
+            DayOfSeason = sDate.Day;
+            Year = sDate.Year;
+        }
+
+        public string GetDateAsString()
+        {
+            String filename = String.Format("-{0,4}", this.RunDay);
+            filename += String.Format("-{0,4}{1,1}{2,2}", this.Year, this.SeasonIndex, this.DayOfSeason);
+            return filename;
         }
     }
     class PlayerInfo
     {
-        public string playerName { get; set; }
-        public string farmName { get; set; }
-        public int uniqueId { get; set; }
+        public string PlayerName { get; set; }
+        public string FarmName { get; set; }
+        public long UniqueId { get; set; }
+
+        public PlayerInfo(Farmer farmer, string farmName)
+        {
+            this.PlayerName = farmer.Name;
+            this.FarmName = farmName;
+            this.UniqueId = farmer.UniqueMultiplayerID;
+        }
     }
 
     class StackInBox
     {
-        public string itemName { get; set; }
-        public int category { get; set; }
-        public int quantity { get; set; }
-        public int unitPrice { get; set; }
-        public int totalPrice { get; set; }
+        public string ItemName { get; set; }
+        public string ItemCategory { get; set; }
+        public int ItemQuantity { get; set; }
+        public int ItemUnitPrice { get; set; }
+        public int StackTotalPrice { get; set; }
 
         // Is this item stack a "preserve" item such as jelly, pickles, wine
-        public Boolean isPreserve { get; set; } = false;
+        public Boolean ItemIsPreserve { get; set; } = false;
         // "Starfruit Wine"
         // If false, these fields are ignored
-        public string baseItem { get; set; } = ""; // "Wine"
-        public string preservedItem { get; set; } = ""; // "Starfruit"
-        
+        public string BaseItem { get; set; } = ""; // "Wine"
+        public string PreservedItem { get; set; } = ""; // "Starfruit"
 
+        public StackInBox(Item item)
+        {
+            this.ItemName = item.DisplayName;
+            this.ItemCategory = item.getCategoryName();
+            this.ItemQuantity = item.Stack;
+            this.ItemUnitPrice = item.salePrice();
+            this.StackTotalPrice = StackTotalPrice * this.ItemUnitPrice;
+
+            /*if (item. != 0)
+            {
+                item.Name
+                this.ItemIsPreserve = true;
+                string[]? fields = Game1.objectInformation[id]?.Split('/');
+                this.PreservedItem = Game1.objectInformation[preservedItemIndex].Split('/')[4];
+                this.BaseItem = Game1.objectInformation[item.ParentSheetIndex].Split('/')[4];
+
+            } */
+        }
     }
 }
