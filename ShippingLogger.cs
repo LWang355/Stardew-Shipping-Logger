@@ -22,7 +22,7 @@ namespace StardewShippingLogger
 
         private void OnLoad(object sender, EventArgs e)
         {
-            ShippingLog.PlayerInfo = new PlayerInfo(Game1.player, Game1.getFarm().Name);
+            ShippingLog.PlayerInfo = new PlayerInfo(Game1.player);
         }
 
         private void OnDayStart(object sender, EventArgs e)
@@ -38,7 +38,7 @@ namespace StardewShippingLogger
 
         private void OnDayEnd(object sender, EventArgs e)
         {
-            // 
+            // Iterate through items in shipping bin, added them to log
             foreach (Item item in Game1.getFarm().getShippingBin(Game1.player))
             {
                 ShippingLog.AddItemStack(item);
@@ -48,10 +48,10 @@ namespace StardewShippingLogger
             ShippingLog.calculateProfits();
 
             // Write a Shipping Log file
-            string fileName = $"data/{Constants.SaveFolderName}";
-            fileName += "-"+ShippingLog.PlayerInfo.PlayerName;
-            fileName += "-" + ShippingLog.DayInfo.GetDateAsString();
-            fileName += "-" + DateTime.Now.ToString("yyyyMMdd-HHmm");
+            string fileName = $"data/{Constants.SaveFolderName}/";
+            fileName += ShippingLog.PlayerInfo.PlayerName;
+            fileName += "-"+ShippingLog.DayInfo.GetDateAsString();
+            fileName += "-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".json";
 
             this.Helper.Data.WriteJsonFile(fileName, ShippingLog);
         }
@@ -112,8 +112,8 @@ namespace StardewShippingLogger
 
         public string GetDateAsString()
         {
-            String filename = String.Format("-{0,4}", this.RunDay);
-            filename += String.Format("-{0,4}{1,1}{2,2}", this.Year, this.SeasonIndex, this.DayOfSeason);
+            //String filename = String.Format("{0,4}-D{1,4}S{2,1}Y{3,2}", this.RunDay.ToString("D4"),this.Year.ToString("D4"), this.SeasonIndex, this.DayOfSeason);
+            String filename = String.Format("{0,4}", this.RunDay.ToString("D4"));
             return filename;
         }
     }
@@ -123,10 +123,10 @@ namespace StardewShippingLogger
         public string FarmName { get; set; }
         public long UniqueId { get; set; }
 
-        public PlayerInfo(Farmer farmer, string farmName)
+        public PlayerInfo(Farmer farmer)
         {
             this.PlayerName = farmer.Name;
-            this.FarmName = farmName;
+            this.FarmName = farmer.farmName.Value;
             this.UniqueId = farmer.UniqueMultiplayerID;
         }
     }
@@ -136,6 +136,7 @@ namespace StardewShippingLogger
         public string ItemName { get; set; }
         public string ItemCategory { get; set; }
         public int ItemQuantity { get; set; }
+        public int ItemQuality { get; set; }
         public int ItemUnitPrice { get; set; }
         public int StackTotalPrice { get; set; }
 
@@ -151,8 +152,9 @@ namespace StardewShippingLogger
             this.ItemName = item.DisplayName;
             this.ItemCategory = item.getCategoryName();
             this.ItemQuantity = item.Stack;
-            this.ItemUnitPrice = item.salePrice();
-            this.StackTotalPrice = StackTotalPrice * this.ItemUnitPrice;
+            this.ItemQuality = 1; // TODO: Find quality
+            this.ItemUnitPrice = item.salePrice(); // TODO: "Sells-For Price"
+            this.StackTotalPrice = this.ItemQuantity * this.ItemUnitPrice;
 
             /*if (item. != 0)
             {
