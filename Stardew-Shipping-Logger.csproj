@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Stardew_Shipping_Logger</RootNamespace>
+    <AssemblyName>ShippingLogger</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,5 +28,9 @@
     <Resource Include="manifest.json" />
     <Resource Include="README.md" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="XCOPY &quot;$(TargetDir)*.dll&quot; &quot;$(ProjectDir)\Shipping Logger\&quot;&#xD;&#xA;XCOPY &quot;$(TargetDir)*.pdb&quot; &quot;$(ProjectDir)\Shipping Logger\&quot;&#xD;&#xA;XCOPY &quot;$(TargetDir)*.deps.json&quot; &quot;$(ProjectDir)\Shipping Logger\&quot;&#xD;&#xA;XCOPY &quot;$(ProjectDir)manifest.json&quot; &quot;$(ProjectDir)\Shipping Logger\&quot;" />
+  </Target>
 
 </Project>
