@@ -23,7 +23,7 @@ Then, for each item in the shipping bin:
 - Item Name - localized name of item
 - Category - according to this: https://stardewvalleywiki.com/Modding:Items#Categories
 - Quantity 
-- Quality - Normal/Silver/Gold/Iridium, abbrievated (Ns - no star,Ag,Au,Ir) 
+- Quality
 - Price
 - For preserves items, attempts to resolve the base item (eg. Wine) and preserved item (eg. Starfruit)
 

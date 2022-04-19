@@ -4,11 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Stardew_Shipping_Logger</RootNamespace>
     <AssemblyName>ShippingLogger</AssemblyName>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="ShippingLogger.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <ApplicationDefinition Include="manifest.json" />

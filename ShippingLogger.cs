@@ -38,7 +38,7 @@ namespace StardewShippingLogger
 
         private void OnDayEnd(object sender, EventArgs e)
         {
-
+            // 
             foreach (Item item in Game1.getFarm().getShippingBin(Game1.player))
             {
                 ShippingLog.AddItemStack(item);
@@ -47,8 +47,7 @@ namespace StardewShippingLogger
             ShippingLog.DayInfo.MoneyAtEnd = Game1.player.Money;
             ShippingLog.calculateProfits();
 
-            // TODO:
-            // The part that writes out to a file
+            // Write a Shipping Log file
             string fileName = $"data/{Constants.SaveFolderName}";
             fileName += "-"+ShippingLog.PlayerInfo.PlayerName;
             fileName += "-" + ShippingLog.DayInfo.GetDateAsString();
