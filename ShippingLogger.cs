@@ -67,7 +67,7 @@ namespace StardewShippingLogger
 
         public void calculateProfits()
         {
-            this.DayInfo.DayProfit = this.DayInfo.MoneyAtStart - this.DayInfo.MoneyAtEnd;
+            this.DayInfo.OtherRevenue = this.DayInfo.MoneyAtEnd - this.DayInfo.MoneyAtStart;
             this.DayInfo.BinRevenue = this.CalculateBinRevenue();
         }
 
@@ -97,19 +97,21 @@ namespace StardewShippingLogger
     {
         public int RunDay { get; set; }
         public int SeasonIndex { get; set; }
+        public string Season { get; set; }
         public int DayOfSeason { get; set; }
         public int Year { get; set; }
         public int MoneyAtStart { get; set; }
         public int MoneyAtEnd { get; set; }
         public int BinRevenue { get; set; }
-        public int DayProfit { get; set; }
+        public int OtherRevenue { get; set; }
 
         public DayInfo(SDate sDate)
         {
-            RunDay = sDate.DaysSinceStart;
-            SeasonIndex = sDate.SeasonIndex;
-            DayOfSeason = sDate.Day;
-            Year = sDate.Year;
+            this.RunDay = sDate.DaysSinceStart;
+            this.SeasonIndex = sDate.SeasonIndex;
+            this.Season = sDate.Season;
+            this.DayOfSeason = sDate.Day;
+            this.Year = sDate.Year;
         }
 
         public string GetDateAsString()
@@ -136,7 +138,9 @@ namespace StardewShippingLogger
     class StackInBox
     {
         public string ItemName { get; set; }
+        public int ItemID { get; set; }
         public string ItemCategory { get; set; }
+        public int ItemCategoryNum { get; set; }
         public int ItemQuantity { get; set; }
         public int ItemQuality { get; set; }
         public int ItemUnitPrice { get; set; }
@@ -146,32 +150,32 @@ namespace StardewShippingLogger
         public Boolean ItemIsPreserve { get; set; } = false;
         // "Starfruit Wine"
         // If false, these fields are ignored
-        public string BaseItem { get; set; } = ""; // "Wine"
-        public string PreservedItem { get; set; } = ""; // "Starfruit"
-        //public string PreservedItemCategory { get; set; } = "";
+        public string BaseItemName { get; set; } = ""; // "Wine"
+        public string PreservedItemName { get; set; } = ""; // "Starfruit"
+        public int PreservedItemID { get; set; } = 0;
 
         public StackInBox(Item item)
         {
             this.ItemName = item.DisplayName;
             this.ItemCategory = item.getCategoryName();
+            this.ItemCategoryNum = item.Category;
             this.ItemQuantity = item.Stack;
 
             SObject asObj = item.getOne() as SObject;
-
-            
-
+            this.ItemID = asObj.ParentSheetIndex;
             this.ItemQuality = asObj.Quality;
             this.ItemUnitPrice = Utility.getSellToStorePriceOfItem(item, false);
             //this.ItemUnitPrice = asObj.sellToStorePrice(Game1.player.UniqueMultiplayerID);
             this.StackTotalPrice = this.ItemQuantity * this.ItemUnitPrice;
-            
+
+            int preservedItemIndex = asObj.preservedParentSheetIndex.Value;
+            this.PreservedItemID = preservedItemIndex;
 
             if (asObj.preservedParentSheetIndex.Value != 0)
             {
                 this.ItemIsPreserve = true;
-                int preservedItemIndex = asObj.preservedParentSheetIndex.Value;
-                this.PreservedItem = Game1.objectInformation[preservedItemIndex].Split('/')[4];
-                this.BaseItem = Game1.objectInformation[item.ParentSheetIndex].Split('/')[4];
+                this.PreservedItemName = Game1.objectInformation[preservedItemIndex].Split('/')[4];
+                this.BaseItemName = Game1.objectInformation[item.ParentSheetIndex].Split('/')[4];
 
                 /*int preserveItemCatNum = 0;
                 if (int.TryParse(Game1.objectInformation[preservedItemIndex].Split('/')[3].Split(' ')[1], out preserveItemCatNum))

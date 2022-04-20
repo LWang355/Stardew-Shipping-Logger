@@ -13,19 +13,20 @@ A header (at beginning of log file) contains:
 
 Daily entries contain:
 - Game Day (starting at Day 1 = Spr 1 of Yr 1)
-- Season, SeasonDay, Year, Weekday (for convenience)
+- Season, SeasonDay, Year (for convenience)
 - Money at start of day
 - Money at end of day
 - Shipping bin revenue
-- Overall daily profit
+- Other revenue (change in money over the day, without bin profit)
 
 Then, for each item in the shipping bin:
 - Item Name - localized name of item
-- Category - according to this: https://stardewvalleywiki.com/Modding:Items#Categories
+- Item ID - the index in the object data
+- Category - according to this: https://stardewvalleywiki.com/Modding:Items#Categories, as both a (negative) number and a string
 - Quantity 
 - Quality
 - Price
-- For preserves items, attempts to resolve the base item (eg. Wine) and preserved item (eg. Starfruit)
+- For preserves items, lists the preserved item ID, and attempts to resolve the base item (eg. Wine) and preserved item name and ID (eg. Starfruit)
 
 Each daily log is saved on day end, in a separate JSON file.
 The filename is constructed as:
