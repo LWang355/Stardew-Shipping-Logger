@@ -4,6 +4,8 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Objects;
+using SObject = StardewValley.Object;
 using System.Collections.Generic;
 
 namespace StardewShippingLogger
@@ -48,7 +50,7 @@ namespace StardewShippingLogger
             ShippingLog.calculateProfits();
 
             // Write a Shipping Log file
-            string fileName = $"data/{Constants.SaveFolderName}/";
+            string fileName = $"Logs/{Constants.SaveFolderName}/";
             fileName += ShippingLog.PlayerInfo.PlayerName;
             fileName += "-"+ShippingLog.DayInfo.GetDateAsString();
             fileName += "-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".json";
@@ -146,25 +148,55 @@ namespace StardewShippingLogger
         // If false, these fields are ignored
         public string BaseItem { get; set; } = ""; // "Wine"
         public string PreservedItem { get; set; } = ""; // "Starfruit"
+        //public string PreservedItemCategory { get; set; } = "";
 
         public StackInBox(Item item)
         {
             this.ItemName = item.DisplayName;
             this.ItemCategory = item.getCategoryName();
             this.ItemQuantity = item.Stack;
-            this.ItemQuality = 1; // TODO: Find quality
-            this.ItemUnitPrice = item.salePrice(); // TODO: "Sells-For Price"
-            this.StackTotalPrice = this.ItemQuantity * this.ItemUnitPrice;
 
-            /*if (item. != 0)
+            SObject asObj = item.getOne() as SObject;
+
+            
+
+            this.ItemQuality = asObj.Quality;
+            this.ItemUnitPrice = Utility.getSellToStorePriceOfItem(item, false);
+            //this.ItemUnitPrice = asObj.sellToStorePrice(Game1.player.UniqueMultiplayerID);
+            this.StackTotalPrice = this.ItemQuantity * this.ItemUnitPrice;
+            
+
+            if (asObj.preservedParentSheetIndex.Value != 0)
             {
-                item.Name
                 this.ItemIsPreserve = true;
-                string[]? fields = Game1.objectInformation[id]?.Split('/');
+                int preservedItemIndex = asObj.preservedParentSheetIndex.Value;
                 this.PreservedItem = Game1.objectInformation[preservedItemIndex].Split('/')[4];
                 this.BaseItem = Game1.objectInformation[item.ParentSheetIndex].Split('/')[4];
 
-            } */
+                /*int preserveItemCatNum = 0;
+                if (int.TryParse(Game1.objectInformation[preservedItemIndex].Split('/')[3].Split(' ')[1], out preserveItemCatNum))
+                {
+                    this.PreservedItemCategory = ItemCategoryLookup[preserveItemCatNum];
+                } 
+                else
+                {
+                    this.PreservedItemCategory = "";
+                }*/
+            }
         }
+
+       /* IDictionary<int, string> ItemCategoryLookup = new Dictionary<int, string>()
+        {
+            [-2] = "Gem", 
+            [-4] = "Fish",
+            [-5] = "Egg", 
+            [-6] = "Milk", 
+            [-6] = "Cooking",
+            [-8] = "Crafting",
+            [-9] = "BigCraftable",
+            [-12] = "Mineral",
+            [-14] = "Meat",
+        };*/
     }
+
 }

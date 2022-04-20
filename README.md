@@ -28,11 +28,8 @@ Then, for each item in the shipping bin:
 - For preserves items, attempts to resolve the base item (eg. Wine) and preserved item (eg. Starfruit)
 
 Each daily log is saved on day end, in a separate JSON file.
-The filename is constructed as (TBD):
-- Stonecoil-0100-00030127-20220418-1516
-- Farm name
-- Day (4 digits)
-- Year (4 digits)
-- Season (1= Spring, 4=Winter)
-- Day in Season (2 digits)
+The filename is constructed as:
+- Player Name
 - Timestamp "yyyyMMdd-HHmm"
+
+The folder is named for the farm name and ID.
