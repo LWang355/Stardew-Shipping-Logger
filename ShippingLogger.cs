@@ -46,16 +46,21 @@ namespace StardewShippingLogger
                 ShippingLog.AddItemStack(item);
             }
 
-            ShippingLog.DayInfo.MoneyAtEnd = Game1.player.Money;
-            ShippingLog.calculateProfits();
+            // Will not write a log on the first playable day if the intro was skipped
+            if (ShippingLog.DayInfo != null)
+            {
+                ShippingLog.DayInfo.MoneyAtEnd = Game1.player.Money;
+                ShippingLog.calculateProfits();
+            
 
-            // Write a Shipping Log file
-            string fileName = $"Logs/{Constants.SaveFolderName}/";
-            fileName += ShippingLog.PlayerInfo.PlayerName;
-            fileName += "-"+ShippingLog.DayInfo.GetDateAsString();
-            fileName += "-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".json";
+                // Write a Shipping Log file
+                string fileName = $"Logs/{Constants.SaveFolderName}/";
+                fileName += ShippingLog.PlayerInfo.PlayerName;
+                fileName += "-"+ShippingLog.DayInfo.GetDateAsString();
+                fileName += "-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".json";
 
-            this.Helper.Data.WriteJsonFile(fileName, ShippingLog);
+                this.Helper.Data.WriteJsonFile(fileName, ShippingLog);
+            }
         }
 
     }
@@ -149,7 +154,7 @@ namespace StardewShippingLogger
         // Is this item stack a "preserve" item such as jelly, pickles, wine
         public Boolean ItemIsPreserve { get; set; } = false;
         // "Starfruit Wine"
-        // If false, these fields are ignored
+        // If not, these fields are left as defaults
         public string BaseItemName { get; set; } = ""; // "Wine"
         public string PreservedItemName { get; set; } = ""; // "Starfruit"
         public int PreservedItemID { get; set; } = 0;
