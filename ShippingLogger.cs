@@ -142,6 +142,7 @@ namespace StardewShippingLogger
 
     class StackInBox
     {
+        public string ItemDisplayName { get; set; }
         public string ItemName { get; set; }
         public int ItemID { get; set; }
         public string ItemCategory { get; set; }
@@ -161,7 +162,8 @@ namespace StardewShippingLogger
 
         public StackInBox(Item item)
         {
-            this.ItemName = item.DisplayName;
+            this.ItemDisplayName = item.DisplayName;
+            this.ItemName = item.Name;
             this.ItemCategory = item.getCategoryName();
             this.ItemCategoryNum = item.Category;
             this.ItemQuantity = item.Stack;
