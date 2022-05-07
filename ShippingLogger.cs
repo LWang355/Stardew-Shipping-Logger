@@ -153,12 +153,13 @@ namespace StardewShippingLogger
         public int StackTotalPrice { get; set; }
 
         // Is this item stack a "preserve" item such as jelly, pickles, wine
-        public Boolean ItemIsPreserve { get; set; } = false;
+        public bool ItemIsPreserve { get; set; } = false;
         // "Starfruit Wine"
         // If not, these fields are left as defaults
         public string BaseItemName { get; set; } = ""; // "Wine"
         public string PreservedItemName { get; set; } = ""; // "Starfruit"
         public int PreservedItemID { get; set; } = 0;
+        public bool IsEdible { get; set; }
 
         public StackInBox(Item item)
         {
@@ -183,31 +184,10 @@ namespace StardewShippingLogger
                 this.ItemIsPreserve = true;
                 this.PreservedItemName = Game1.objectInformation[preservedItemIndex].Split('/')[4];
                 this.BaseItemName = Game1.objectInformation[item.ParentSheetIndex].Split('/')[4];
-
-                /*int preserveItemCatNum = 0;
-                if (int.TryParse(Game1.objectInformation[preservedItemIndex].Split('/')[3].Split(' ')[1], out preserveItemCatNum))
-                {
-                    this.PreservedItemCategory = ItemCategoryLookup[preserveItemCatNum];
-                } 
-                else
-                {
-                    this.PreservedItemCategory = "";
-                }*/
             }
-        }
 
-       /* IDictionary<int, string> ItemCategoryLookup = new Dictionary<int, string>()
-        {
-            [-2] = "Gem", 
-            [-4] = "Fish",
-            [-5] = "Egg", 
-            [-6] = "Milk", 
-            [-6] = "Cooking",
-            [-8] = "Crafting",
-            [-9] = "BigCraftable",
-            [-12] = "Mineral",
-            [-14] = "Meat",
-        };*/
+            this.IsEdible = asObj.Edibility > 0;
+        }
     }
 
 }
