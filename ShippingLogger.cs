@@ -158,6 +158,7 @@ namespace StardewShippingLogger
         // If not, these fields are left as defaults
         public string BaseItemName { get; set; } = ""; // "Wine"
         public string PreservedItemName { get; set; } = ""; // "Starfruit"
+        public string PreservedItemDisplayName { get; set; } = ""; // "Starfruit"
         public int PreservedItemID { get; set; } = 0;
         public bool IsEdible { get; set; }
 
@@ -182,8 +183,14 @@ namespace StardewShippingLogger
             if (asObj.preservedParentSheetIndex.Value != 0)
             {
                 this.ItemIsPreserve = true;
-                this.PreservedItemName = Game1.objectInformation[preservedItemIndex].Split('/')[4];
-                this.BaseItemName = Game1.objectInformation[item.ParentSheetIndex].Split('/')[4];
+
+                SObject preservedItem = new SObject(parentSheetIndex: preservedItemIndex, initialStack: 1);
+                SObject parentItem = new SObject(parentSheetIndex: item.ParentSheetIndex, initialStack: 1);
+                this.PreservedItemName = preservedItem.Name;
+                this.PreservedItemDisplayName = preservedItem.DisplayName;
+                this.BaseItemName = parentItem.Name;
+                //this.PreservedItemName = Game1.objectInformation[preservedItemIndex].Split('/')[4];
+                //this.BaseItemName = Game1.objectInformation[item.ParentSheetIndex].Split('/')[4];
             }
 
             this.IsEdible = asObj.Edibility > 0;
